@@ -16,12 +16,9 @@ class List {
         //event listeners 
         this.addButton.addEventListener('click', ($event) => {
             $event.preventDefault();
-            this.addTaskToList();
-            
+            this.addTaskToList();  
         });
-
     }
-
         addTaskToList() {
         //creating outer div
         this.todoItem = document.createElement('div');
@@ -31,7 +28,7 @@ class List {
         this.todoListItem.innerText = this.todoInput.value;
         this.todoItem.appendChild(this.todoListItem);
         //local storage 
-        this.saveToStorage(this.todoInput.value);
+        //this.saveToStorage(this.todoInput.value);
         //creating the buttons 
         this.checkedBtn = document.createElement('button');
         this.checkedBtn.innerHTML = '<i class="far fa-check-square"></i>';
@@ -42,16 +39,32 @@ class List {
         this.deleteBtn.classList.add('delete');
         this.todoItem.appendChild(this.deleteBtn);
         
-        //insert before??
+        //insert to top of list? How? Array.
         this.todoOutput.appendChild(this.todoItem);
         this.todoInput.value = '';
         this.buttonLoop();
         }
 
+
         buttonLoop() {
             let allDeleteButtons = document.querySelectorAll('.delete');
+            let allCompletedButtons = document.querySelectorAll('.completed'); 
+            let last = allDeleteButtons.length-1;
+
+            allDeleteButtons[last].addEventListener('click', () => {
+                
+                this.deleteTodo(allDeleteButtons[last]);    
+            });
+            allCompletedButtons[last].addEventListener('click', () => {
+                this.completeTodo(allCompletedButtons[last]);
+            })
+            
+        }
+
+        start() {
+            let allDeleteButtons = document.querySelectorAll('.delete');
             for (let i=0; i < allDeleteButtons.length; i++) {
-                allDeleteButtons[i].addEventListener('click', () => {
+                allDeleteButtons[i].addEventListener('click', $event => {
                     this.deleteTodo(allDeleteButtons[i]);
                 });
             };
@@ -62,6 +75,7 @@ class List {
                     this.completeTodo(allCompletedButtons[i]);
                 });
             };
+            localStorage.clear();
         }
 
         deleteTodo(childElement) {
@@ -74,9 +88,7 @@ class List {
         };
 
         completeTodo(childElement) {
-            //toggle doesn't work, multiple event listeners.. 
-            //Remove event listeners at the start of loop? Or add event listener when we add the task? 
-            childElement.parentElement.classList.add('todo-item-completed');
+            childElement.parentElement.classList.toggle('todo-item-completed');
         };
 
         saveToStorage(todo) {
@@ -89,28 +101,11 @@ class List {
             savedTodos.push(todo);
             localStorage.setItem('savedTodos', JSON.stringify(savedTodos));
         }
+
+        retrieveSavedTodos() {
+            //
+        }
     }
 
     let myApp = new List;
-    myApp.buttonLoop();
-
-    /*this.todoOutput.addEventListener('click', ($event) => {
-            //how to separate the functions when variable comes from event listener?
-            let item = $event.target;
-            const todo = item.parentElement; 
-            if (item.classList[0] === 'delete') {
-                todo.classList.add('falling');
-                todo.addEventListener('transitionend', () => {
-                    todo.remove();
-                });
-                
-            }
-    
-            if (item.classList[0] === 'completed') {
-                //this.completeTodo();
-                todo.classList.toggle('todo-item-completed');
-            }
-            else {
-                return;
-            }
-        });*/
+    myApp.start();
