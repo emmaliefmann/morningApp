@@ -6,10 +6,11 @@ class List {
         this.addButton = document.querySelector('.todo-button');
         this.todoInput = document.querySelector('.todo-input');
         this.todoOutput = document.querySelector('.todo-list');
-        this.deleteBtn = document.getElementsByClassName('.delete');
-        this.completedBtn = document.querySelector('.completed');
+        this.deleteBtn = document.getElementsByClassName('delete');
+        this.completedBtn = document.querySelectorAll('.completed');
         this.form = document.getElementsByTagName('form');
         this.todoList = document.querySelector('.todo-list');
+
         
 
         //event listeners 
@@ -19,26 +20,6 @@ class List {
             
         });
 
-        this.todoOutput.addEventListener('click', ($event) => {
-            //how to separate the functions when variable comes from event listener?
-            let item = $event.target;
-            const todo = item.parentElement; 
-            if (item.classList[0] === 'delete') {
-                todo.classList.add('falling');
-                todo.addEventListener('transitionend', () => {
-                    todo.remove();
-                });
-                
-            }
-    
-            if (item.classList[0] === 'completed') {
-                //this.completeTodo();
-                todo.classList.toggle('todo-item-completed');
-            }
-            else {
-                return;
-            }
-        });
     }
 
         addTaskToList() {
@@ -61,11 +42,42 @@ class List {
         this.deleteBtn.classList.add('delete');
         this.todoItem.appendChild(this.deleteBtn);
         
-        //append whole div to ul list
         //insert before??
         this.todoOutput.appendChild(this.todoItem);
         this.todoInput.value = '';
+        this.buttonLoop();
         }
+
+        buttonLoop() {
+            let allDeleteButtons = document.querySelectorAll('.delete');
+            for (let i=0; i < allDeleteButtons.length; i++) {
+                allDeleteButtons[i].addEventListener('click', () => {
+                    this.deleteTodo(allDeleteButtons[i]);
+                });
+            };
+
+            let allCompletedButtons = document.querySelectorAll('.completed');
+            for (let i=0; i < allCompletedButtons.length; i++) {
+                allCompletedButtons[i].addEventListener('click', () => {
+                    this.completeTodo(allCompletedButtons[i]);
+                });
+            };
+        }
+
+        deleteTodo(childElement) {
+            let todo = childElement.parentElement;
+            
+            todo.classList.add('falling');
+                todo.addEventListener('transitionend', () => {
+                    todo.remove();
+                });
+        };
+
+        completeTodo(childElement) {
+            //toggle doesn't work, multiple event listeners.. 
+            //Remove event listeners at the start of loop? Or add event listener when we add the task? 
+            childElement.parentElement.classList.add('todo-item-completed');
+        };
 
         saveToStorage(todo) {
             let savedTodos; 
@@ -77,6 +89,28 @@ class List {
             savedTodos.push(todo);
             localStorage.setItem('savedTodos', JSON.stringify(savedTodos));
         }
-}
+    }
 
-const myTodoApp = new List; 
+    let myApp = new List;
+    myApp.buttonLoop();
+
+    /*this.todoOutput.addEventListener('click', ($event) => {
+            //how to separate the functions when variable comes from event listener?
+            let item = $event.target;
+            const todo = item.parentElement; 
+            if (item.classList[0] === 'delete') {
+                todo.classList.add('falling');
+                todo.addEventListener('transitionend', () => {
+                    todo.remove();
+                });
+                
+            }
+    
+            if (item.classList[0] === 'completed') {
+                //this.completeTodo();
+                todo.classList.toggle('todo-item-completed');
+            }
+            else {
+                return;
+            }
+        });*/
