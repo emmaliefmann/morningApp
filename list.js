@@ -16,19 +16,21 @@ class List {
         //event listeners 
         this.addButton.addEventListener('click', ($event) => {
             $event.preventDefault();
-            this.addTaskToList();  
+            let task = this.todoInput.value;
+            this.addTaskToList(task);  
         });
     }
-        addTaskToList() {
+        addTaskToList(task) {
         //creating outer div
         this.todoItem = document.createElement('div');
         this.todoItem.classList.add('todo-item');   
         //creating li items 
         this.todoListItem = document.createElement('li');
-        this.todoListItem.innerText = this.todoInput.value;
+        //this.todoListItem.innerText = this.todoInput.value;
+        this.todoListItem.innerText = task;
         this.todoItem.appendChild(this.todoListItem);
         //local storage 
-        //this.saveToStorage(this.todoInput.value);
+        this.saveToStorage(task);
         //creating the buttons 
         this.checkedBtn = document.createElement('button');
         this.checkedBtn.innerHTML = '<i class="far fa-check-square"></i>';
@@ -52,7 +54,7 @@ class List {
             let last = allDeleteButtons.length-1;
 
             allDeleteButtons[last].addEventListener('click', () => {
-                
+                console.log("index : "[last]);
                 this.deleteTodo(allDeleteButtons[last]);    
             });
             allCompletedButtons[last].addEventListener('click', () => {
@@ -65,7 +67,8 @@ class List {
             let allDeleteButtons = document.querySelectorAll('.delete');
             for (let i=0; i < allDeleteButtons.length; i++) {
                 allDeleteButtons[i].addEventListener('click', $event => {
-                    this.deleteTodo(allDeleteButtons[i]);
+                    console.log([i]);
+                    //this.deleteTodo(allDeleteButtons[i]);
                 });
             };
 
@@ -75,7 +78,7 @@ class List {
                     this.completeTodo(allCompletedButtons[i]);
                 });
             };
-            localStorage.clear();
+            
         }
 
         deleteTodo(childElement) {
@@ -85,27 +88,35 @@ class List {
                 todo.addEventListener('transitionend', () => {
                     todo.remove();
                 });
+
         };
 
         completeTodo(childElement) {
             childElement.parentElement.classList.toggle('todo-item-completed');
         };
 
-        saveToStorage(todo) {
+        saveToStorage(value) {
             let savedTodos; 
             if(localStorage.getItem('savedTodos') === null) {
                 savedTodos = [];
             } else {
                 savedTodos = JSON.parse(localStorage.getItem('savedTodos'));
             }
-            savedTodos.push(todo);
+            savedTodos.push(value);
             localStorage.setItem('savedTodos', JSON.stringify(savedTodos));
         }
 
-        retrieveSavedTodos() {
-            //
+        getSavedTodos() {
+            let savedTodos; 
+            if(localStorage.getItem('savedTodos') === null) {
+                savedTodos = [];
+            } else {
+                savedTodos = JSON.parse(localStorage.getItem('savedTodos'));
+            } 
+            savedTodos.forEach(savedTodo => this.addTaskToList(savedTodo));
         }
     }
 
     let myApp = new List;
     myApp.start();
+    myApp.getSavedTodos();
