@@ -2,7 +2,6 @@
 
 class List {
     constructor() {
-        //this.deleteButton 
         this.addButton = document.querySelector('.todo-button');
         this.todoInput = document.querySelector('.todo-input');
         this.todoOutput = document.querySelector('.todo-list');
@@ -54,7 +53,7 @@ class List {
             let last = allDeleteButtons.length-1;
 
             allDeleteButtons[last].addEventListener('click', () => {
-                console.log("index : "[last]);
+                this.removeFromStorage(allDeleteButtons[last]);
                 this.deleteTodo(allDeleteButtons[last]);    
             });
             allCompletedButtons[last].addEventListener('click', () => {
@@ -67,8 +66,8 @@ class List {
             let allDeleteButtons = document.querySelectorAll('.delete');
             for (let i=0; i < allDeleteButtons.length; i++) {
                 allDeleteButtons[i].addEventListener('click', $event => {
-                    console.log([i]);
-                    //this.deleteTodo(allDeleteButtons[i]);
+                    this.removeFromStorage(allDeleteButtons[i]);
+                    this.deleteTodo(allDeleteButtons[i]);
                 });
             };
 
@@ -78,7 +77,16 @@ class List {
                     this.completeTodo(allCompletedButtons[i]);
                 });
             };
-            
+        }; 
+
+        removeFromStorage(item) {
+            let parent = item.parentElement;
+            let taskText = parent.children[0].innerText;
+            let savedTodos = JSON.parse(localStorage.getItem('savedTodos'));
+            let itemToRemove = savedTodos.indexOf(taskText);
+            savedTodos.splice(itemToRemove, 1);
+            localStorage.setItem('savedTodos', JSON.stringify(savedTodos));            
+           
         }
 
         deleteTodo(childElement) {
