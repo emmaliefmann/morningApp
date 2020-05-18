@@ -49,6 +49,7 @@ form button:hover {
     align-items: center;
     font-size: 1em;
     background-color: white;
+    border: solid white 2px;
     padding: 1em;
     width: 70%;
     margin: 0.5em;
@@ -84,4 +85,19 @@ li {
 
 .fa-trash-alt, .fa-check-square {
     pointer-events: none;
+}
+
+/*draggable classes*/
+.hold {
+    border: solid lightgray 2px;
+}
+.invisible {
+    display: none;
+}
+.hovered {
+    background-color: grey;
+    border: black 2px dashed;
+}
+.fill {
+    display: flex;
 }

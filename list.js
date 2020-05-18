@@ -7,29 +7,76 @@ class List {
         this.todoOutput = document.querySelector('.todo-list');
         this.deleteBtn = document.getElementsByClassName('delete');
         this.completedBtn = document.querySelectorAll('.completed');
+        this.todoItems = document.querySelectorAll('.todo-item');
         this.form = document.getElementsByTagName('form');
         this.todoList = document.querySelector('.todo-list');
-
+        this.dragBtn = document.querySelector('.drag');
         
 
         //event listeners 
         this.addButton.addEventListener('click', ($event) => {
             $event.preventDefault();
             let task = this.todoInput.value;
-            this.addTaskToList(task);  
+            this.addTaskToList(task);
+            this.saveToStorage(task);  
         });
+
+        
     }
+
+        draggableLoop() {
+            let newTodoItems = document.querySelectorAll('.todo-item');
+            for (let i=0; i < newTodoItems.length; i++){
+                newTodoItems[i].addEventListener('dragstart', () => {
+                    //this.dragStart();
+                    console.log('start');
+                    newTodoItems[i].classList.add('hold');
+                    setTimeout(() => (newTodoItems[i].classList.add('invisible'), 0));
+                });
+                newTodoItems[i].addEventListener('dragend', () => {
+                    //this.dragEnd(); 
+                    console.log('dragend');
+                    newTodoItems[i].classList.remove('hold');
+                    newTodoItems[i].classList.remove('invisible');
+                });
+                newTodoItems[i].addEventListener('dragover', ($event) => {
+                    $event.preventDefault();
+                    console.log('over');
+                });
+                newTodoItems[i].addEventListener('dragenter', ($event) => {
+                    $event.preventDefault();
+                    console.log('enter');
+                    newTodoItems[i].classList.add('hovered');
+                });
+                newTodoItems[i].addEventListener('dragleave', () => {
+                    newTodoItems[i].classList.remove('hovered');
+                    console.log('leave');
+                });
+                newTodoItems[i].addEventListener('drop', () => {
+                    console.log('drop');
+                    newTodoItems[i].classList.remove('hovered');
+                });
+            };
+        };
+        dragStart() {
+            console.log('start');
+            this.classList.add('hold');
+        }
+
+        dragEnd() {
+            console.log('dragend');
+        }
+
         addTaskToList(task) {
         //creating outer div
         this.todoItem = document.createElement('div');
-        this.todoItem.classList.add('todo-item');   
+        this.todoItem.classList.add('todo-item'); 
+        this.todoItem.setAttribute('draggable', true);
         //creating li items 
         this.todoListItem = document.createElement('li');
-        //this.todoListItem.innerText = this.todoInput.value;
         this.todoListItem.innerText = task;
         this.todoItem.appendChild(this.todoListItem);
-        //local storage 
-        this.saveToStorage(task);
+        
         //creating the buttons 
         this.checkedBtn = document.createElement('button');
         this.checkedBtn.innerHTML = '<i class="far fa-check-square"></i>';
@@ -63,6 +110,7 @@ class List {
         }
 
         start() {
+           
             let allDeleteButtons = document.querySelectorAll('.delete');
             for (let i=0; i < allDeleteButtons.length; i++) {
                 allDeleteButtons[i].addEventListener('click', $event => {
@@ -117,7 +165,9 @@ class List {
         getSavedTodos() {
             let savedTodos; 
             if(localStorage.getItem('savedTodos') === null) {
+                console.log('empty');
                 savedTodos = [];
+                
             } else {
                 savedTodos = JSON.parse(localStorage.getItem('savedTodos'));
             } 
@@ -128,3 +178,4 @@ class List {
     let myApp = new List;
     myApp.start();
     myApp.getSavedTodos();
+    myApp.draggableLoop();
